@@ -27,7 +27,7 @@
 # Author: Pawel Pieczul
 #
 
-import sys, re, json
+import sys, re, json, functools
 from json import JSONEncoder
 
 class ObjectEncoder(JSONEncoder):
@@ -95,10 +95,7 @@ class Component:
 			raise ValueError("Trace contains duplicate values")		
 		cnt = 0
 		for tr in traces.keys():
-			cnt = 0
-			for cn in trace:
-				if cn in traces[tr]:
-					cnt += 1
+			cnt = functools.reduce(lambda a, b: a + 1 if b in trace_to_original_form(traces[tr]) else a, trace, 0)
 			if cnt > 0:
 				if cnt != len(trace):
 					raise ValueError("Trace ({}:{}) different to already stored ({}:{})".format(name, trace, tr, traces[tr]))		
@@ -106,7 +103,7 @@ class Component:
 					name = tr;
 				elif name != tr:
 					raise ValueError("Trace ({}) named differently than already stored ({})".format(name, tr))		
-				elif self.id + "-" + str(pin) not in traces[tr]:
+				elif self.id + "-" + str(pin) not in trace_to_original_form(traces[tr]):
 					raise ValueError("Source pin ({}) name not part of the trace list".format(pin))		
 				break
 		if cnt == 0:
@@ -118,7 +115,7 @@ class Component:
 					a = traces[name]
 				else:
 					a = []
-				traces[name] = a + [[self.id, str(pin - 1)]]
+				traces[name] = a + [[self.id, pin - 1]]
 			else:
 				if name != "":
 					new_trace = []
@@ -140,6 +137,9 @@ class Component:
 			raise ValueError("Missing pins definition ({})".format(test_pins))
 		for pin in list(range(1, 1 + self.pin_count)):
 			self.pins.append(pins[pin])
+
+def trace_to_original_form(trace):
+	return [t[0] + "-" + str(t[1]+1) for t in trace] 
 
 def process_file(file, board):
 	header = True
