@@ -27,6 +27,12 @@ With this script it is possible to display information about board components an
 **Options**
 
 ```
+-g or --graphics
+```
+
+Display an image with the motherboard and mark the location of components.
+
+```
 -h or --help
 ```
 Display tool help (usage).

@@ -25,8 +25,11 @@
 # Author: Pawel Pieczul
 #
 
-import sys, re, json, getopt, fnmatch
+import sys, re, json, getopt, fnmatch, matplotlib
 from json import JSONDecodeError
+from matplotlib import image
+from matplotlib import pyplot
+from matplotlib.patches import Rectangle
 
 global prog_name
 
@@ -81,6 +84,7 @@ def usage():
 	print()
 	print("OPTIONS:")
 	print("  {:<33} {}".format("-c,--component <id1>[,<id2>,...]", "Display given component IDs (wildcards allowed for each ID)"))
+	print("  {:<33} {}".format("-g,--graphics", "Display board image with annotations"))
 	print("  {:<33} {}".format("-h,--help", "Display help"))
 	print("  {:<33} {}".format("-j,--json <json>", "Use a given JSON file with wire list"))
 	print("  {:<33} {}".format("-s,--sequential", "Display traces for each component separately"))
@@ -99,7 +103,7 @@ def usage():
 
 def main(argv):
 	try:
-		opts, args = getopt.getopt(argv, "hj:c:s",["help","json=","component=","sequential"])
+		opts, args = getopt.getopt(argv, "ghj:c:s",["graphics", "help","json=","component=","sequential"])
 	except getopt.GetoptError:
 		usage()
 
@@ -109,6 +113,7 @@ def main(argv):
 	json_file = "./original/a3-wire-list.json"
 	component_filter = "*"
 	sequential_filter = False
+	graphics = False
 
 	for opt, arg in opts:
 		if opt in ["-h", "--help"]:
@@ -119,6 +124,8 @@ def main(argv):
 			json_file = arg
 		elif opt in ["-s", "--sequential"]:
 			sequential_filter = True
+		elif opt in ["-g", "--graphics"]:
+			graphics = True
 
 	board = load_json(json_file)
 	if board is None: 
@@ -142,9 +149,18 @@ def main(argv):
 	single_mode = (len(components) == 1)
 
 	components.sort(key = lambda x: x["id"][0] + x["id"][1:].zfill(4))
+
+	if graphics:
+		matplotlib.rcParams['figure.figsize'] = (14.0, 9.0)
+		data = image.imread("./pictures/a3-board-clear.jpg")
+		pyplot.axis("off")
+		pyplot.imshow(data)
+		gca = pyplot.gca()
+
 	for c in components:
+		id = c["id"]
 		print("{}: {} {}{}".format( \
-			c["id"].rjust(cid_width),  \
+			id.rjust(cid_width),  \
 			(c["part"] + ("" if c["type"] == "" else "/" + c["type"])).ljust(part_width), \
 			c["location"].ljust(3), "" if single_mode else format_pins(c["pins"])))
 		if sequential_filter or single_mode:
@@ -153,12 +169,25 @@ def main(argv):
 				fmt = "-".rjust(id_width) if t == "" else format_trace(t, traces[t], id_width)
 				print("{:>2}: {}".format(pin + 1, fmt))
 			print()
+		if graphics and "box" in c:
+			colors = { "U" : "#00ff00", \
+					   "L" : "#ff0000", \
+					   "J" : "#ffff00", \
+					   "Q" : "#ff0000"}
+			b = c["box"]
+			t = id[0]
+			color = colors[t] if t in colors else "#000000"
+			rect = Rectangle((b[0], b[1]), b[2], -b[3], linewidth = 1.5, edgecolor = color, facecolor = color + "40")
+			gca.add_patch(rect)
 
 	if not single_mode and not sequential_filter: 
 		print()
 		for k, v in traces.items():
 			print(format_trace(k, v, id_width))
 		print()
+
+	if graphics:
+		pyplot.show()
 
 if __name__ == "__main__":
 	assert sys.version_info >= (3, 0)
