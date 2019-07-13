@@ -25,14 +25,14 @@
 # Author: Pawel Pieczul
 #
 
-import sys, re, json, getopt, fnmatch, matplotlib, numpy
+import sys, re, json, getopt, fnmatch, matplotlib, numpy, math
 from json import JSONDecodeError
 from matplotlib import image
 from matplotlib import pyplot
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Rectangle, PathPatch, Polygon, Circle
 from matplotlib.text import TextPath
-from matplotlib.patches import PathPatch
-from matplotlib.transforms import Affine2D, IdentityTransform
+from matplotlib.transforms import Affine2D
+from functools import reduce
 
 global prog_name
 
@@ -136,7 +136,7 @@ def draw_component(id, c, gca):
 		b = c["box"]; t = id[0]
 		x = b[0]; y = 2000 - b[1]; w = b[2]; h = b[3]
 		color = colors[t] if t in colors else "#000000"
-		rect = Rectangle((x, y), w, h, linewidth = 1.5, edgecolor = color, facecolor = color + "40")
+		rect = Rectangle((x, y), w, h, linewidth = 1.5, edgecolor = color, facecolor = color + "60", zorder = 1)
 		gca.add_patch(rect)
 		draw_text(id, x, y, abs(w), abs(h), gca)
 
@@ -192,16 +192,24 @@ def print_traces(board, trace_filter, sequential_filter, gca):
 		print(format_trace(key, tr, tid_width, single_mode))
 
 		cs = [board.components[i[0]] for i in tr]
+		pins = [i[1] for i in tr]
 		cid_width = max([len(c["id"]) for c in cs])
 		part_width = max([len(c["part"]) + len(c["type"]) + 1 for c in cs])
 
 		if sequential_filter or single_mode:
 			print()
-			for c in cs:
+			for idx, c in enumerate(cs):
 				id = c["id"]
 				print(format_component(id, c, cid_width, part_width, single_mode, sequential_filter))
-				draw_component(id, c, gca)
-
+				draw_component(id + "-" + str(pins[idx] + 1), c, gca)
+			
+			if gca is not None:
+				p = [(c["box"][0] + c["box"][2] / 2, 2000 - c["box"][1] + c["box"][3] / 2) for c in cs if "box" in c]
+				center = reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]), p, (0, 0))
+				center = (center[0] / len(p), (center[1] / len(p)))
+				p.sort(key = lambda a: math.atan2(a[1] - center[1], a[0] - center[0]))
+				poly = Polygon(p, closed = True, fill = False, linewidth = 2, edgecolor = "#ffffff", zorder = 0.5)
+				gca.add_patch(poly)
 	print()
 
 def main(argv):
