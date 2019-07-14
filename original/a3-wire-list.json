@@ -26,7 +26,7 @@
                 "T001",
                 "GND"
             ],
-            "type": "AL-ELECT"
+            "type": "CAPALEL"
         },
         "C10": {
             "id": "C10",
@@ -40,7 +40,7 @@
                 "SUMSND",
                 "PEXTSPK"
             ],
-            "type": "ELECT"
+            "type": "CAPEL"
         },
         "C12": {
             "id": "C12",
@@ -54,7 +54,7 @@
                 "+12V",
                 "GND"
             ],
-            "type": "AL-ELECT"
+            "type": "CAPALEL"
         },
         "C13": {
             "id": "C13",
@@ -68,7 +68,7 @@
                 "T006",
                 "GND"
             ],
-            "type": "ELECT"
+            "type": "CAPEL"
         },
         "C15": {
             "id": "C15",
@@ -82,7 +82,7 @@
                 "TCAP",
                 "GND"
             ],
-            "type": "MYLAR"
+            "type": "CAPMYL"
         },
         "C16": {
             "id": "C16",
@@ -96,7 +96,7 @@
                 "T007",
                 "T008"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C17": {
             "id": "C17",
@@ -110,7 +110,7 @@
                 "T009",
                 "T010"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C18": {
             "id": "C18",
@@ -124,7 +124,7 @@
                 "T009",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C2": {
             "id": "C2",
@@ -138,7 +138,7 @@
                 "PWRDN*",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C20": {
             "id": "C20",
@@ -152,7 +152,7 @@
                 "UPRST*",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C21": {
             "id": "C21",
@@ -166,7 +166,7 @@
                 "T011",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C22": {
             "id": "C22",
@@ -180,7 +180,7 @@
                 "T012",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C23": {
             "id": "C23",
@@ -194,7 +194,7 @@
                 "T013",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C25": {
             "id": "C25",
@@ -208,7 +208,7 @@
                 "+5FV",
                 "GNDF"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C26": {
             "id": "C26",
@@ -222,7 +222,7 @@
                 "-5FV",
                 "GNDF"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C27": {
             "id": "C27",
@@ -236,7 +236,7 @@
                 "+12FV",
                 "GNDF"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C28": {
             "id": "C28",
@@ -250,7 +250,7 @@
                 "-12FV",
                 "GNDF"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C29": {
             "id": "C29",
@@ -264,7 +264,7 @@
                 "+12V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C3": {
             "id": "C3",
@@ -293,7 +293,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C31": {
             "id": "C31",
@@ -307,7 +307,7 @@
                 "+12V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C32": {
             "id": "C32",
@@ -321,7 +321,7 @@
                 "+12V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C33": {
             "id": "C33",
@@ -335,7 +335,7 @@
                 "+12V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C34": {
             "id": "C34",
@@ -349,7 +349,7 @@
                 "+12V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C35": {
             "id": "C35",
@@ -363,7 +363,7 @@
                 "-12V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C36": {
             "id": "C36",
@@ -377,7 +377,7 @@
                 "-5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C37": {
             "id": "C37",
@@ -391,7 +391,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C38": {
             "id": "C38",
@@ -405,7 +405,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C39": {
             "id": "C39",
@@ -419,7 +419,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C4": {
             "id": "C4",
@@ -433,7 +433,7 @@
                 "T003",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C40": {
             "id": "C40",
@@ -447,7 +447,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C41": {
             "id": "C41",
@@ -461,7 +461,7 @@
                 "-12V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C42": {
             "id": "C42",
@@ -475,7 +475,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C43": {
             "id": "C43",
@@ -489,7 +489,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C44": {
             "id": "C44",
@@ -503,7 +503,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C45": {
             "id": "C45",
@@ -517,7 +517,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C46": {
             "id": "C46",
@@ -531,7 +531,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C47": {
             "id": "C47",
@@ -545,7 +545,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C48": {
             "id": "C48",
@@ -559,7 +559,7 @@
                 "-5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C5": {
             "id": "C5",
@@ -573,7 +573,7 @@
                 "T004",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C50": {
             "id": "C50",
@@ -587,7 +587,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C51": {
             "id": "C51",
@@ -601,7 +601,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C52": {
             "id": "C52",
@@ -615,7 +615,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C53": {
             "id": "C53",
@@ -629,7 +629,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C54": {
             "id": "C54",
@@ -643,7 +643,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C55": {
             "id": "C55",
@@ -657,7 +657,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C56": {
             "id": "C56",
@@ -671,7 +671,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C57": {
             "id": "C57",
@@ -685,7 +685,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C58": {
             "id": "C58",
@@ -699,7 +699,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C59": {
             "id": "C59",
@@ -713,7 +713,7 @@
                 "CS6522",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C60": {
             "id": "C60",
@@ -727,7 +727,7 @@
                 "+5FV",
                 "GNDF"
             ],
-            "type": "AL-ELECT"
+            "type": "CAPALEL"
         },
         "C61": {
             "id": "C61",
@@ -741,7 +741,7 @@
                 "GNDF",
                 "-5FV"
             ],
-            "type": "AL-ELECT"
+            "type": "CAPALEL"
         },
         "C62": {
             "id": "C62",
@@ -755,7 +755,7 @@
                 "+12FV",
                 "GNDF"
             ],
-            "type": "AL-ELECT"
+            "type": "CAPALEL"
         },
         "C63": {
             "id": "C63",
@@ -769,7 +769,7 @@
                 "GNDF",
                 "-12FV"
             ],
-            "type": "AL-ELECT"
+            "type": "CAPALEL"
         },
         "C64": {
             "id": "C64",
@@ -783,7 +783,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C65": {
             "id": "C65",
@@ -797,7 +797,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C66": {
             "id": "C66",
@@ -811,7 +811,7 @@
                 "T014",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C67": {
             "id": "C67",
@@ -825,7 +825,7 @@
                 "T015",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C68": {
             "id": "C68",
@@ -839,7 +839,7 @@
                 "T016",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C69": {
             "id": "C69",
@@ -853,7 +853,7 @@
                 "+5V",
                 "T017"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C7": {
             "id": "C7",
@@ -867,7 +867,7 @@
                 "+5V",
                 "DT1M"
             ],
-            "type": "AL-ELECT"
+            "type": "CAPALEL"
         },
         "C70": {
             "id": "C70",
@@ -881,7 +881,7 @@
                 "T018",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C71": {
             "id": "C71",
@@ -895,7 +895,7 @@
                 "KRESET*",
                 "GNDF"
             ],
-            "type": "ELECT"
+            "type": "CAPEL"
         },
         "C73": {
             "id": "C73",
@@ -909,7 +909,7 @@
                 "+12V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C74": {
             "id": "C74",
@@ -923,7 +923,7 @@
                 "T019",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C75": {
             "id": "C75",
@@ -937,7 +937,7 @@
                 "T009",
                 "T010"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C76": {
             "id": "C76",
@@ -951,7 +951,7 @@
                 "T020",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C77": {
             "id": "C77",
@@ -965,7 +965,7 @@
                 "T021",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C78": {
             "id": "C78",
@@ -979,7 +979,7 @@
                 "T022",
                 "GND"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "C79": {
             "id": "C79",
@@ -993,7 +993,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C80": {
             "id": "C80",
@@ -1007,7 +1007,7 @@
                 "+5V",
                 "GND"
             ],
-            "type": "MON"
+            "type": "CAPMON"
         },
         "C9": {
             "id": "C9",
@@ -1021,7 +1021,7 @@
                 "T005",
                 "GNDF"
             ],
-            "type": "CER"
+            "type": "CAPCER"
         },
         "J1": {
             "box": [
@@ -1823,7 +1823,7 @@
                 "T004",
                 "GNDF"
             ],
-            "type": "L1"
+            "type": "COIL2"
         },
         "L2": {
             "box": [
@@ -1843,7 +1843,7 @@
                 "+5V",
                 "+5FV"
             ],
-            "type": "FIL1"
+            "type": "COIL1"
         },
         "L3": {
             "box": [
@@ -1863,7 +1863,7 @@
                 "-5V",
                 "-5FV"
             ],
-            "type": "FIL2"
+            "type": "COIL2"
         },
         "L4": {
             "box": [
@@ -1883,7 +1883,7 @@
                 "+12V",
                 "+12FV"
             ],
-            "type": "FIL1"
+            "type": "COIL1"
         },
         "L5": {
             "box": [
@@ -1903,7 +1903,7 @@
                 "-12V",
                 "-12FV"
             ],
-            "type": "FIL2"
+            "type": "COIL2"
         },
         "P1": {
             "box": [
@@ -2481,7 +2481,7 @@
                 "C14M",
                 "T019"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R101": {
             "id": "R101",
@@ -2495,7 +2495,7 @@
                 "T025",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R102": {
             "id": "R102",
@@ -2509,7 +2509,7 @@
                 "+5V",
                 "Q3*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R103": {
             "id": "R103",
@@ -2523,7 +2523,7 @@
                 "Q3*",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R106": {
             "id": "R106",
@@ -2537,7 +2537,7 @@
                 "+5V",
                 "S5A"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R107": {
             "id": "R107",
@@ -2551,7 +2551,7 @@
                 "+5V",
                 "S5B"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R108": {
             "id": "R108",
@@ -2565,7 +2565,7 @@
                 "+5V",
                 "S5C"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R109": {
             "id": "R109",
@@ -2579,7 +2579,7 @@
                 "+5V",
                 "S5D"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R12": {
             "id": "R12",
@@ -2593,7 +2593,7 @@
                 "T033",
                 "NTSC"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R13": {
             "id": "R13",
@@ -2607,7 +2607,7 @@
                 "T033",
                 "GND"
             ],
-            "type": "Q2"
+            "type": "RESQW"
         },
         "R15": {
             "id": "R15",
@@ -2621,7 +2621,7 @@
                 "T026",
                 "B&WVID"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R16": {
             "id": "R16",
@@ -2635,7 +2635,7 @@
                 "T026",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R31": {
             "id": "R31",
@@ -2649,7 +2649,7 @@
                 "DT1M",
                 "+5V"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R34": {
             "id": "R34",
@@ -2663,7 +2663,7 @@
                 "EXTSPK1",
                 "T022"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R35": {
             "id": "R35",
@@ -2677,7 +2677,7 @@
                 "AIISPKR",
                 "SUMSND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R36": {
             "id": "R36",
@@ -2691,7 +2691,7 @@
                 "T022",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R37": {
             "id": "R37",
@@ -2705,7 +2705,7 @@
                 "+12V",
                 "T020"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R38": {
             "id": "R38",
@@ -2719,7 +2719,7 @@
                 "T020",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R39": {
             "id": "R39",
@@ -2733,7 +2733,7 @@
                 "+12V",
                 "T005"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R4": {
             "id": "R4",
@@ -2747,7 +2747,7 @@
                 "+5V",
                 "T001"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R40": {
             "id": "R40",
@@ -2761,7 +2761,7 @@
                 "ANYKEY",
                 "T009"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R43": {
             "id": "R43",
@@ -2775,7 +2775,7 @@
                 "T028",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R44": {
             "id": "R44",
@@ -2789,7 +2789,7 @@
                 "+5V",
                 "UPRST*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R45": {
             "id": "R45",
@@ -2803,7 +2803,7 @@
                 "+5V",
                 "T036"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R46": {
             "id": "R46",
@@ -2817,7 +2817,7 @@
                 "T036",
                 "T011"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R47": {
             "id": "R47",
@@ -2831,7 +2831,7 @@
                 "T037",
                 "T008"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R48": {
             "id": "R48",
@@ -2845,7 +2845,7 @@
                 "+12V",
                 "T029"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R49": {
             "id": "R49",
@@ -2859,7 +2859,7 @@
                 "T013",
                 "T031"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R5": {
             "id": "R5",
@@ -2873,7 +2873,7 @@
                 "+12V",
                 "T024"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R51": {
             "id": "R51",
@@ -2887,7 +2887,7 @@
                 "T032",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R52": {
             "id": "R52",
@@ -2901,7 +2901,7 @@
                 "T030",
                 ""
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R53": {
             "id": "R53",
@@ -2915,7 +2915,7 @@
                 "+5V",
                 "UUTRST*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R54": {
             "id": "R54",
@@ -2929,7 +2929,7 @@
                 "HPEDIS",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R55": {
             "id": "R55",
@@ -2943,7 +2943,7 @@
                 "COLORBURST",
                 "T004"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R57": {
             "id": "R57",
@@ -2957,7 +2957,7 @@
                 "+5V",
                 "PDL0T*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R58": {
             "id": "R58",
@@ -2971,7 +2971,7 @@
                 "RRAS0.3*",
                 "RAS0.3*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R59": {
             "id": "R59",
@@ -2985,7 +2985,7 @@
                 "RRAS1.2*",
                 "RAS1.2*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R6": {
             "id": "R6",
@@ -2999,7 +2999,7 @@
                 "+5V",
                 "PWRDN*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R60": {
             "id": "R60",
@@ -3013,7 +3013,7 @@
                 "RRAS4.5*",
                 "RAS4.5*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R61": {
             "id": "R61",
@@ -3027,7 +3027,7 @@
                 "RRAS6.7*",
                 "RAS6.7*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R63": {
             "id": "R63",
@@ -3041,7 +3041,7 @@
                 "FIELDIN",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R65": {
             "id": "R65",
@@ -3055,7 +3055,7 @@
                 "+5V",
                 "MOTON*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R66": {
             "id": "R66",
@@ -3069,7 +3069,7 @@
                 "T038",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R67": {
             "id": "R67",
@@ -3083,7 +3083,7 @@
                 "+5V",
                 "T039"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R68": {
             "id": "R68",
@@ -3097,7 +3097,7 @@
                 "PCS6522",
                 "CS6522"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R69": {
             "id": "R69",
@@ -3111,7 +3111,7 @@
                 "AUDIO",
                 "T040"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R75": {
             "id": "R75",
@@ -3125,7 +3125,7 @@
                 "+5V",
                 "T017"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R76": {
             "id": "R76",
@@ -3139,7 +3139,7 @@
                 "+5V",
                 "T041"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R77": {
             "id": "R77",
@@ -3153,7 +3153,7 @@
                 "T041",
                 "T018"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R78": {
             "id": "R78",
@@ -3167,7 +3167,7 @@
                 "T042",
                 "SUMSND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R79": {
             "id": "R79",
@@ -3181,7 +3181,7 @@
                 "+5V",
                 "CKIRQ*"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R80": {
             "id": "R80",
@@ -3195,7 +3195,7 @@
                 "KRESET*",
                 "+5V"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R81": {
             "id": "R81",
@@ -3209,7 +3209,7 @@
                 "T043",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R85": {
             "id": "R85",
@@ -3223,7 +3223,7 @@
                 "+5V",
                 "SW1/MGNSWUF"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R86": {
             "id": "R86",
@@ -3237,7 +3237,7 @@
                 "T044",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R87": {
             "id": "R87",
@@ -3251,7 +3251,7 @@
                 "+12V",
                 "PCTS"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R88": {
             "id": "R88",
@@ -3265,7 +3265,7 @@
                 "+12V",
                 "PDSR"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R89": {
             "id": "R89",
@@ -3279,7 +3279,7 @@
                 "+12V",
                 "PDCD"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R9": {
             "id": "R9",
@@ -3293,7 +3293,7 @@
                 "T035",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R90": {
             "id": "R90",
@@ -3307,7 +3307,7 @@
                 "+12V",
                 "T013"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R91": {
             "id": "R91",
@@ -3321,7 +3321,7 @@
                 "T013",
                 "GND"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R92": {
             "id": "R92",
@@ -3335,7 +3335,7 @@
                 "TRESET",
                 "UUTUPRST"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R93": {
             "id": "R93",
@@ -3349,7 +3349,7 @@
                 "Q3",
                 "T015"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R94": {
             "id": "R94",
@@ -3363,7 +3363,7 @@
                 "PRE1M",
                 "T016"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R95": {
             "id": "R95",
@@ -3377,7 +3377,7 @@
                 "PRE1M*",
                 "T021"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R96": {
             "id": "R96",
@@ -3391,7 +3391,7 @@
                 "PH0",
                 "T014"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R97": {
             "id": "R97",
@@ -3405,7 +3405,7 @@
                 "ARR0",
                 "AR0"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R98": {
             "id": "R98",
@@ -3419,7 +3419,7 @@
                 "ARR1",
                 "AR1"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "R99": {
             "id": "R99",
@@ -3433,7 +3433,7 @@
                 "ARR5",
                 "AR5"
             ],
-            "type": "QW"
+            "type": "RESQW"
         },
         "T1": {
             "id": "T1",
@@ -7303,7 +7303,7 @@
                 "T030",
                 "T031"
             ],
-            "type": "XTAL1"
+            "type": "XTAL"
         },
         "Y2": {
             "id": "Y2",
@@ -7317,7 +7317,7 @@
                 "T002",
                 "T003"
             ],
-            "type": "XTAL2"
+            "type": "XTAL"
         }
     },
     "traces": {
