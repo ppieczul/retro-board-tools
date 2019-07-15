@@ -1,6 +1,6 @@
-# Apple /// Board Schematic Tools
+# Retro Board Schematic Tools
 
-The purpose of this project is to provide tools and data that help in navigating the **Apple ///** motherboard circuitry.
+The purpose of this project is to provide tools and data that help in navigating the **retro-computing** motherboard's circuitry.
 
 It is a work in progress that just started. Contributions are welcome!
 
@@ -11,20 +11,28 @@ You are also welcome to visit my collection of vintage computers:
 
 ## Content:
 
-  * [`original`](./original) - stuff related to the original **Wire List** from the service manual
-  * [`a3-board.py`](./a3-board.py) - script to display board information
+  * [`data`](./data) - post-processed **JSON** files describing boards and components
+  * [`original`](./original) - stuff related to the original pre-processed content
+  * [`pictures`](./pictures) - pictures of the boards and components
+  * [`board.py`](./a3-board.py) - script to display and visualize board information
 
-### a3-board.py
+### board.py
 
-With this script it is possible to display information about board components and traces. Script loads and parses a board wire list from a JSON file.
+With this script it is possible to display information about board components and traces. Script loads and parses a board wire list from a **JSON** file. JSON files are contained in [`data`](./data) directory.
 
-**Syntax**
+**SYNTAX:**
 
 ```
-./a3-board.py [options]
+./board.py [options] <board-file.json>
 ```
 
-**Options**
+Where:
+
+```
+board-file.json - a file describing the board to query
+```
+
+**OPTIONS:**
 
 ```
 -g or --graphics
@@ -46,12 +54,6 @@ Select IDs of components to display information about. Only one of `-t, -c` can 
   * Single ID is case insensitive, e.g.: `U128` or `r5`
   * Single ID can use file-style wildcards, e.g.: `U*` or `C1?`
   * Multiple IDs can be separated by commas, e.g.: `U128,R5,C10` or with wildcards: `U10?,R*,X2`
-
-```
--j or --json <JSON-file>
-```
-
-Select a non-default JSON file with wire list definition. Default file is [`./original/a3-wire-list.json`](./original/a3-wire-list.json)
 
 ```
 -s or --sequential

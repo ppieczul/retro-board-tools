@@ -1,6 +1,6 @@
 #!/opt/local/bin/python3.7
 
-# Apple /// Board Schematic Tools
+# Retro Board Schematic Tools
 # Copyright (C) 2019 oldcrap.org
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #
 
 #
-# This program loads Apple /// wire list from a JSON file and displays information
+# This program loads a wire list from a JSON file and displays information
 # about components and traces of the board. Various ways of filtering and presenting
 # the data are available.
 #
@@ -46,24 +46,23 @@ class MotherBoard:
 
 def usage():
 	print()
-	print("USAGE:", prog_name, " -c<ids>|-t<ids> [options]")
+	print("USAGE:", prog_name, " -c<ids>|-t<ids> [options] <board-file.json>")
 	print()
 	print("OPTIONS:")
 	print("  {:<33} {}".format("-c,--component <id1>[,<id2>,...]", "Display components (wildcards allowed for each ID)"))
 	print("  {:<33} {}".format("-g,--graphics", "Display board image with annotations"))
 	print("  {:<33} {}".format("-h,--help", "Display help"))
-	print("  {:<33} {}".format("-j,--json <json>", "Use a given JSON file with wire list"))
 	print("  {:<33} {}".format("-s,--sequential", "Display traces for each component separately"))
 	print("  {:<33} {}".format("-t,--trace <id1>[,<id2>,...]", "Display traces (wildcards allowed for each ID)"))
 	print()
 	print("EXAMPLES:")
-	print("  {} -c* -s".format(prog_name))
+	print("  {} -c* -s a3-board.json".format(prog_name))
 	print("      Display all components and all traces one by one.")
 	print()
-	print("  {} -cC*".format(prog_name))
+	print("  {} -cC* c64-board.json".format(prog_name))
 	print("      Display all capacitors and a combined trace.")
 	print()
-	print("  {} -cU160,R5,X*".format(prog_name))
+	print("  {} -cU160,R5,X*  a3-board.json".format(prog_name))
 	print("      Display chip U160, resistor R5 and all diodes and a combined trace.")
 	print()
 	sys.exit()
@@ -214,14 +213,14 @@ def print_traces(board, trace_filter, sequential_filter, gca):
 
 def main(argv):
 	try:
-		opts, args = getopt.getopt(argv, "ghj:c:t:s",["graphics", "help","json=","component=","trace=", "sequential"])
+		opts, args = getopt.getopt(argv, "ghc:t:s",["graphics", "help","component=","trace=", "sequential"])
 	except getopt.GetoptError:
 		usage()
 
-	if len(opts) == 0:
+	if len(opts) == 0 or len(args) < 1:
 		usage()
 
-	json_file = "./original/a3-wire-list.json"
+	json_file = args[0]
 	component_filter = None
 	trace_filter = None
 	sequential_filter = False
@@ -240,7 +239,7 @@ def main(argv):
 			sequential_filter = True
 		elif opt in ["-g", "--graphics"]:
 			matplotlib.rcParams['figure.figsize'] = (14.0, 9.0)
-			data = image.imread("./pictures/a3-board-clear.jpg")
+			data = image.imread("./pictures/a3-board-clear.jpg") # TODO: unharcode
 			data = numpy.flipud(data)
 			pyplot.axis("off")
 			pyplot.imshow(data, origin = "lower")

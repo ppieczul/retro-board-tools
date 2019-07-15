@@ -1,74 +1,68 @@
-# Apple /// Board Schematic Tools
+# Original Board Data
 
-## Original Apple /// Wire List
+This directory contains files with the **original** data and scripts to transform this data into **JSON** form. For the **JSON** syntax, please see the [`data`](../data) directory.
 
-*[Apple /// Service Reference Manual](ftp://ftp.apple.asimov.net/pub/apple_II/documentation/apple3/service_reference_manual/Apple%20III%20Service%20Reference%20Manual-OCR-1982.pdf), Section II or II, Servicing Information, Chapter 15, Wire List* contains information on **Apple ///** board components and their connections.
+## Content
 
-A digitized version of the original **Wire List** is in file:
-[a3-wire-list.txt](./a3-wire-list.txt)
+  * [`apple3`](./apple3) - directory with **Apple ///** data
+  * [`add-locations.py`](./add-locations.py) - script to inject component locations on the board into the **JSON** file
+  * [`components.txt`](./components.txt) - text file with description of electronic components found on the boards
 
-The original service manual is a copyrighted document. The reproduction of the wire list is published here under the assumption that the document is an abandonware, which has been made publically available at [archive.org](https://archive.org/details/Apple_III_Service_Reference_Manual-OCR-1982), and with a good will to help the retro computing community with fixing their **Apple ///** machines. Also, an attempt was made to contact Apple wrt copyright and license, but no response has been received.
+### add-locations.py
 
-## Wire List Parse Tool
-
-A script [a3-parse-wire-list.py](./a3-parse-wire-list.py) can be used to parse and validate the **Wire List** file and to generate a more useful **JSON** with all components and traces information. From there, there are endless possibilities on writing post processing tools and servicing for the **Apple ///** board.
-
-## JSON Syntax
-
-**JSON** syntax used for the description of the **Apple ///** board is the following:
+**SYNTAX:**
 
 ```
-{
-    components : {
-        "COMPONENT-ID" : {
-            "box" : [
-                POSITION-X,
-                POSITION-Y,
-                WIDTH,
-                HEIGHT
-            ],
-            "id" : "COMPONENT-ID",
-            "location" : "BOARD-LOCATION",
-            "pages" : [
-                SCHEMATIC-PAGE,
-                ...
-            ],
-            "part" : "PART-DESCRIPTION",
-            "pin_count" : PIN-COUNT,
-            "pins" : [
-                "TRACE-ID",
-                ...
-            ],
-            "type" : "PART-TYPE"
-        },
-        ...
-    },
-    traces : {
-        "TRACE-ID" : [
-            "COMPONENT-ID",
-            PIN-INDEX
-        ],
-        ...
-    }    
-}
+add-locations.py <locations-file.csv> <json-file.json>
+```
+
+This script parses a **CSV** file containing coordinates of components on a board and injects them into the existing **JSON** file with board definition. The resulting **JSON** is sent to the standard output.
+
+The **CSV** file should contain components in individual lines with the following syntax:
+
+```
+ID,X,Y,W,H
 ```
 
 Where:
 
 ```
-COMPONENT-ID     - Part Reference Designator (e.g. U176 or C12)
-BOARD-LOCATION   - Coordinates of location on board A-N/1-14 (e.g. A7 or L12)
-SCHEMATIC-PAGE   - Page number on schematic pages from the service manual
-PART-DESCRIPTION - Part description (e.g. 4.7K or S374 or 220U)
-PIN-COUNT        - Number of pins in the component
-TRACE-ID         - ID (name) of the trace on board that pin is part of (e.g. SUMSND or A11)
-                   Traces with no names in the Wire List are automatically named as T001, T002, ...
-PART-TYPE        - Type of the component (e.g. SIP8 or MOLEX)
-PIN-INDEX        - Index of a pin in a component, starting with 0. Index 0 designated pin number 1.
-POSITION-X       - Horizontal position of component's footprint on the A3 board image
-POSITION-Y       - Vertical position of component's footprint on the A3 board image
-WIDTH            - Width of a component's footprint on the A3 board image (can be negative)
-HEIGHT           - Height of a component's footprint on the A3 board image (can be negative)
+ID  - Component's ID, used as a key to the components table in the JSON file
+X,Y - Coordinates on the board, with `0,0` point located in the lower left corner of the image. 
+      The coordinates should point to the location closest to a pin 1 of the component.
+W,H - Width and height of the component. 
+      These values can be negative, depending on the orientation of the component.
+
 ```
 
-The A3 board image is a photograpic image of the board with dimensions of 3200x2000 pixels and the (0,0) pixel located in bottom left corner of the picture.
+### components.txt
+
+This file contains description of electronic components found on boards. The description is used to determine the inputs and outputs of the component pins and to build a board connection graph.
+
+The file should contain components descriptions separated by empty line(s). A single component description should follow the syntax:
+
+```
+<ID>,<DESCRIPTION>
+1=<PIN-ID>, <PIN-TYPE> [, (<INPUTS>)]
+2=<PIN-ID>, <PIN-TYPE> [, (<INPUTS>)]
+...
+```
+
+Where:
+
+```
+ID          - ID of the component part, e.g. 7400
+DESCRIPTION - Description of the part
+PIN-ID      - ID of the component's pin
+PIN-TYPE    - type of the pin, one of:
+              I - pin is an input  
+              O - pin is an output  
+              B - pin is a bi-directional  
+              C - pin is a clock input
+              G - pin is a connection to ground
+              P - pin is a power input  
+INPUTS      - For O and B pin type, the list of I or C pins which act as inputs for the output pin.
+              State of these pins will impact the state of the output pin.
+              If the output is autonomously generated at the component (e.g. in a CPU), 
+              the list should be (-).            
+```

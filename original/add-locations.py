@@ -50,7 +50,7 @@ def check_integer(i, idx):
 
 def process_csv(csv, json):
 	for idx,line in enumerate(csv):
-		x = re.split(";", line.rstrip().lstrip())
+		x = re.split(",", line.rstrip().lstrip())
 		if (len(x) < 5 or any([i == "" for i in x])):
 			print("Error: incomplete line {}".format(idx))
 			sys.exit()
