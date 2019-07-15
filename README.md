@@ -2,6 +2,12 @@
 
 The purpose of this project is to provide tools and data that help in navigating the **retro-computing** motherboard's circuitry.
 
+<p align="left">
+<a href="./pictures/demo-screen-1.jpg"><img src="./pictures/demo-screen-1.jpg" width=45%/></a>
+<a href="./pictures/demo-screen-2.jpg"><img src="./pictures/demo-screen-2.jpg" width=45%/></a>
+</p>
+<a href="./pictures/demo-screen-3.jpg"><img src="./pictures/demo-screen-3.jpg" width=60%/></a>
+
 It is a work in progress that just started. Contributions are welcome!
 
 You are also welcome to visit my collection of vintage computers:

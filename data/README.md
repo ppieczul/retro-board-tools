@@ -2,7 +2,11 @@
 
 This directory contains **JSON** files describing boards.
 
-### JSON Syntax
+## Content:
+
+  * [`a3-board.json`](./a3-board.json) - **Apple ///**
+
+## JSON Syntax
 
 ```
 {
@@ -58,4 +62,4 @@ WIDTH            - Width of a component's footprint on the board image (can be n
 HEIGHT           - Height of a component's footprint on the board image (can be negative)
 ```
 
-The board image is a photograpic image of the board with dimensions of 3200x2000 pixels and the (0,0) pixel located in bottom left corner of the picture.
+The board image is a photograpic image of the board with the (0,0) pixel located in bottom left corner of the picture.
