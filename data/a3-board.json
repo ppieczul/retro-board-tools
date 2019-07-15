@@ -1,4 +1,5 @@
 {
+    "board_image" : "a3-board-clear.jpg",
     "components": {
         "B1": {
             "id": "B1",

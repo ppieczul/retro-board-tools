@@ -10,6 +10,7 @@ This directory contains **JSON** files describing boards.
 
 ```
 {
+    board_image : "BOARD-IMAGE-FILE",
     components : {
         "COMPONENT-ID" : {
             "box" : [
@@ -47,6 +48,7 @@ This directory contains **JSON** files describing boards.
 Where:
 
 ```
+BOARD-IMAGE-FILE - File name of a board's image for visualizations
 COMPONENT-ID     - Part Reference Designator (e.g. U176 or C12)
 BOARD-LOCATION   - Coordinates of location on board A-N/1-14 (e.g. A7 or L12)
 SCHEMATIC-PAGE   - Page number on schematic pages from the service manual

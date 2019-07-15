@@ -43,6 +43,10 @@ class MotherBoard:
 			return
 		self.components = json["components"]
 		self.traces = json["traces"]
+		if "board_image" in json:
+			self.board_image = json["board_image"]
+		else:
+			self.board_image = None
 
 def usage():
 	print()
@@ -221,6 +225,10 @@ def main(argv):
 		usage()
 
 	json_file = args[0]
+	board = load_json(json_file)
+	if board is None: 
+		return
+
 	component_filter = None
 	trace_filter = None
 	sequential_filter = False
@@ -233,21 +241,15 @@ def main(argv):
 			component_filter = arg.upper()
 		elif opt in ["-t", "--trace"]:
 			trace_filter = arg.upper()
-		elif opt in ["-j", "--json"]:
-			json_file = arg
 		elif opt in ["-s", "--sequential"]:
 			sequential_filter = True
-		elif opt in ["-g", "--graphics"]:
+		elif opt in ["-g", "--graphics"] and board.board_image is not None:
 			matplotlib.rcParams['figure.figsize'] = (14.0, 9.0)
-			data = image.imread("./pictures/a3-board-clear.jpg") # TODO: unharcode
+			data = image.imread("./pictures/" + board.board_image)
 			data = numpy.flipud(data)
 			pyplot.axis("off")
 			pyplot.imshow(data, origin = "lower")
 			gca = pyplot.gca()
-
-	board = load_json(json_file)
-	if board is None: 
-		return
 
 	if component_filter is None and trace_filter is None:
 		usage()
