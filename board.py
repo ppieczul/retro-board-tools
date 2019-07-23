@@ -115,16 +115,16 @@ def format_trace(id, trace, id_width, single_mode):
 		return "{}: {}".format(id.rjust(id_width), txt)
 
 def draw_text(txt, x, y, w, h, gca):
-	rotate = (w < h)
+	rotate = (abs(w) < abs(h))
 	tp = TextPath((0, 0), txt, size = (w if rotate else h) * 0.7)
 	tbox = tp.get_extents()
 	if not rotate:
 		xtr = x + (w - tbox.width) / 2
-		ytr = y - h + (h - tbox.height) / 2
+		ytr = y + (h - tbox.height) / 2
 		tp = tp.transformed(Affine2D().translate(xtr, ytr))
 	else:
 		xtr = x + tbox.height + (w - tbox.height) / 2
-		ytr = y - h + (h - tbox.width) / 2
+		ytr = y + (h - tbox.width) / 2
 		tp = tp.transformed(Affine2D().rotate_deg(90) + Affine2D().translate(xtr, ytr))
 	txt = PathPatch(tp, linewidth=0.5, facecolor = "0", edgecolor = "0")
 	gca.add_patch(txt)
@@ -137,11 +137,11 @@ def draw_component(id, c, gca):
 				   "Q" : "#ff0000", \
 				   "P" : "#ff00ff"}
 		b = c["box"]; t = id[0]
-		x = b[0]; y = 2000 - b[1]; w = b[2]; h = b[3]
+		x = b[0]; y = b[1]; w = b[2]; h = b[3]
 		color = colors[t] if t in colors else "#000000"
 		rect = Rectangle((x, y), w, h, linewidth = 1.5, edgecolor = color, facecolor = color + "60", zorder = 1)
 		gca.add_patch(rect)
-		draw_text(id, x, y, abs(w), abs(h), gca)
+		draw_text(id, x, y, w, h, gca)
 
 def print_components(board, component_filter, sequential_filter, gca):
 	print()
@@ -207,7 +207,7 @@ def print_traces(board, trace_filter, sequential_filter, gca):
 				draw_component(id + "-" + str(pins[idx] + 1), c, gca)
 			
 			if gca is not None:
-				p = [(c["box"][0] + c["box"][2] / 2, 2000 - c["box"][1] + c["box"][3] / 2) for c in cs if "box" in c]
+				p = [(c["box"][0] + c["box"][2] / 2, c["box"][1] + c["box"][3] / 2) for c in cs if "box" in c]
 				center = reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]), p, (0, 0))
 				center = (center[0] / len(p), (center[1] / len(p)))
 				p.sort(key = lambda a: math.atan2(a[1] - center[1], a[0] - center[0]))

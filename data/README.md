@@ -58,8 +58,8 @@ TRACE-ID         - ID (name) of the trace on board that pin is part of (e.g. SUM
                    Traces with no names in the Wire List are automatically named as T001, T002, ...
 PART-TYPE        - Type of the component (e.g. SIP8 or MOLEX)
 PIN-INDEX        - Index of a pin in a component, starting with 0. Index 0 designated pin number 1.
-POSITION-X       - Horizontal position of component's footprint on the A3 board image
-POSITION-Y       - Vertical position of component's footprint on the A3 board image
+POSITION-X       - Horizontal position of component's footprint on the board image
+POSITION-Y       - Vertical position of component's footprint on the board image
 WIDTH            - Width of a component's footprint on the board image (can be negative)
 HEIGHT           - Height of a component's footprint on the board image (can be negative)
 ```
