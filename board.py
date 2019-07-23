@@ -97,22 +97,22 @@ def format_pins(pins):
 		txt += "-" if trace == "" else trace
 	return " (" + txt + ")"
 
-def format_component(id, c, id_width, part_width, single_mode, sequential_filter):
+def format_component(id, c, id_width, part_width, simple, skip_pins):
 	return "{}: {} {}{}".format( \
-		id.rjust(id_width),  \
-		(c["part"] + ("" if c["type"] == "" else "/" + c["type"])).ljust(part_width), \
-		c["location"].ljust(3), "" if single_mode or sequential_filter else format_pins(c["pins"]))
+		id.rjust(0 if simple else id_width),  \
+		(c["part"] + ("" if c["type"] == "" else "/" + c["type"])).ljust(0 if simple else part_width), \
+		c["location"].ljust(0 if simple else 3), "" if skip_pins else format_pins(c["pins"]))
 
 def format_trace(id, trace, id_width, single_mode):
 	if is_id_power(id):
-		return "{}: ...".format(id.rjust(id_width))
+		return "{}: ...".format(id.rjust(0 if single_mode else id_width))
 	else:
 		trace.sort(key = lambda x: x[0][0] + x[0][1:].zfill(3) + str(x[1]).zfill(2))
 		txt = ""
 		for t in trace:
 			pin = "{}-{}".format(t[0], t[1] + 1)
 			txt += ("{} " if single_mode else "{:<8}").format(pin)
-		return "{}: {}".format(id.rjust(id_width), txt)
+		return "{}: {}".format(id.rjust(0 if single_mode else id_width), txt)
 
 def draw_text(txt, x, y, w, h, gca):
 	rotate = (abs(w) < abs(h))
@@ -143,6 +143,16 @@ def draw_component(id, c, gca):
 		gca.add_patch(rect)
 		draw_text(id, x, y, w, h, gca)
 
+def draw_neighbors(board, id, component, trace, gca):
+	for t in board.traces[trace]:
+		neighbor = board.components[t[0]]; pin = t[1]
+		if neighbor["id"] != id and "box" in neighbor and "box" in component:
+			draw_component(neighbor["id"], neighbor, gca)
+			p = [component_center(neighbor), component_center(component)]
+			line = Polygon(p, closed = False, fill = False, linewidth = 1, \
+				edgecolor = "#ffffff", zorder = 0.5)
+			gca.add_patch(line)
+
 def print_components(board, component_filter, sequential_filter, gca):
 	print()
 	filters = re.split(",", component_filter)
@@ -164,20 +174,34 @@ def print_components(board, component_filter, sequential_filter, gca):
 
 	for c in components:
 		id = c["id"]
-		print(format_component(id, c, cid_width, part_width, single_mode, sequential_filter))
-		if sequential_filter or single_mode:
+		raw = single_mode or sequential_filter
+		print(format_component(id, c, cid_width, part_width, raw, raw))
+		if raw:
 			print()
 			for pin, t in enumerate(c["pins"]):
-				fmt = "-".rjust(id_width) if t == "" else format_trace(t, traces[t], id_width, single_mode)
+				fmt = "-".rjust(id_width) if t == "" else format_trace(t, traces[t], id_width, False)
 				print("{:>2}: {}".format(pin + 1, fmt))
+				if single_mode and t != "" and not is_id_power(t):
+					draw_neighbors(board, id, c, t, gca)
 			print()
-		draw_component(id, c, gca)
+			draw_component(id, c, gca)
+			if gca is not None:
+				pyplot.show()	
+				gca = init_gca(board)
+		else:
+			draw_component(id, c, gca)
 
-	if not single_mode and not sequential_filter: 
+	if not raw: 
 		print()
 		for k, v in traces.items():
-			print(format_trace(k, v, id_width, single_mode))
+			print(format_trace(k, v, id_width, False))
 		print()
+		if gca is not None:
+			pyplot.show()
+
+def component_center(c):
+	b = c["box"]
+	return (b[0] + b[2] / 2, b[1] + b[3] / 2)
 
 def print_traces(board, trace_filter, sequential_filter, gca):
 	print()
@@ -190,30 +214,48 @@ def print_traces(board, trace_filter, sequential_filter, gca):
 	single_mode = (len(traces) == 1)
 	tid_width = max([len(key) for key in traces.keys()])
 
+	color = 0xff; items = len(traces)
 	for key, tr in sorted(traces.items()):
 		tr.sort(key = lambda x: x[0] + str(x[1]).zfill(3))
-		print(format_trace(key, tr, tid_width, single_mode))
+		print(format_trace(key, tr, tid_width, True))
 
 		cs = [board.components[i[0]] for i in tr]
 		pins = [i[1] for i in tr]
 		cid_width = max([len(c["id"]) for c in cs])
 		part_width = max([len(c["part"]) + len(c["type"]) + 1 for c in cs])
 
-		if sequential_filter or single_mode:
-			print()
-			for idx, c in enumerate(cs):
-				id = c["id"]
-				print(format_component(id, c, cid_width, part_width, single_mode, sequential_filter))
-				draw_component(id + "-" + str(pins[idx] + 1), c, gca)
-			
-			if gca is not None:
-				p = [(c["box"][0] + c["box"][2] / 2, c["box"][1] + c["box"][3] / 2) for c in cs if "box" in c]
-				center = reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]), p, (0, 0))
-				center = (center[0] / len(p), (center[1] / len(p)))
-				p.sort(key = lambda a: math.atan2(a[1] - center[1], a[0] - center[0]))
-				poly = Polygon(p, closed = True, fill = False, linewidth = 2, edgecolor = "#ffffff", zorder = 0.5)
-				gca.add_patch(poly)
-	print()
+		print()
+		for idx, c in enumerate(cs):
+			id = c["id"]
+			print(format_component(id, c, cid_width, part_width, False, True))
+			draw_component(id + ("-" + str(pins[idx] + 1) if single_mode else ""), c, gca)
+		
+		if gca is not None and "box" in c:
+			p = [component_center(c) for c in cs if "box" in c]
+			center = reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]), p, (0, 0))
+			center = (center[0] / len(p), (center[1] / len(p)))
+			p.sort(key = lambda a: math.atan2(a[1] - center[1], a[0] - center[0]))
+			c = int(color)
+			poly = Polygon(p, closed = True, fill = False, linewidth = 2, \
+				edgecolor = "#{:02X}{:02X}{:02X}".format(c, c, c), zorder = 0.5)
+			if not sequential_filter:
+				color = color - (0xff / items)
+			gca.add_patch(poly)
+		print()
+		if sequential_filter and gca is not None:
+			pyplot.show()
+			gca = init_gca(board)
+
+	if not sequential_filter and gca is not None:
+		pyplot.show()
+
+def init_gca(board):
+	matplotlib.rcParams['figure.figsize'] = (14.0, 9.0)
+	data = image.imread("./pictures/" + board.board_image)
+	data = numpy.flipud(data)
+	pyplot.axis("off")
+	pyplot.imshow(data, origin = "lower")
+	return pyplot.gca()
 
 def main(argv):
 	try:
@@ -244,12 +286,7 @@ def main(argv):
 		elif opt in ["-s", "--sequential"]:
 			sequential_filter = True
 		elif opt in ["-g", "--graphics"] and board.board_image is not None:
-			matplotlib.rcParams['figure.figsize'] = (14.0, 9.0)
-			data = image.imread("./pictures/" + board.board_image)
-			data = numpy.flipud(data)
-			pyplot.axis("off")
-			pyplot.imshow(data, origin = "lower")
-			gca = pyplot.gca()
+			gca = init_gca(board)
 
 	if component_filter is None and trace_filter is None:
 		usage()
@@ -262,9 +299,6 @@ def main(argv):
 		print_components(board, component_filter, sequential_filter, gca)
 	elif trace_filter is not None:
 		print_traces(board, trace_filter, sequential_filter, gca)
-
-	if gca is not None:
-		pyplot.show()
 
 if __name__ == "__main__":
 	assert sys.version_info >= (3, 0)
