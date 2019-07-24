@@ -29,9 +29,11 @@ import sys, re, json, getopt, fnmatch, matplotlib, numpy, math
 from json import JSONDecodeError
 from matplotlib import image
 from matplotlib import pyplot
-from matplotlib.patches import Rectangle, PathPatch, Polygon, Circle
+from matplotlib.font_manager import FontProperties
+from matplotlib.patches import Rectangle, PathPatch, Polygon, Circle, FancyBboxPatch
 from matplotlib.text import TextPath
-from matplotlib.transforms import Affine2D
+from matplotlib.transforms import Affine2D, Bbox
+from matplotlib.backends.backend_pdf import PdfPages
 from functools import reduce
 
 global prog_name
@@ -115,19 +117,36 @@ def format_trace(id, trace, id_width, single_mode):
 		return "{}: {}".format(id.rjust(0 if single_mode else id_width), txt)
 
 def draw_text(txt, x, y, w, h, gca):
+	v_max_scale = 0.7
+	h_max_scale = 0.8
+
 	rotate = (abs(w) < abs(h))
-	tp = TextPath((0, 0), txt, size = (w if rotate else h) * 0.7)
-	tbox = tp.get_extents()
-	if not rotate:
-		xtr = x + (w - tbox.width) / 2
-		ytr = y + (h - tbox.height) / 2
-		tp = tp.transformed(Affine2D().translate(xtr, ytr))
+	fp = FontProperties(family="arial")
+	fsize = w if rotate else h
+	tp = TextPath((0, 0), txt, size = fsize, prop = fp)
+
+	bw, bh = w, h
+	(__, __, tw, th) = tp.get_extents().bounds		
+	if rotate:
+		tp = tp.transformed(Affine2D().rotate_deg(90).translate(th, 0))
+		bw, bh = bh, bw 
+
+	if tw < h_max_scale * bw:
+		scale = v_max_scale * bh / th
 	else:
-		xtr = x + tbox.height + (w - tbox.height) / 2
-		ytr = y + (h - tbox.width) / 2
-		tp = tp.transformed(Affine2D().rotate_deg(90) + Affine2D().translate(xtr, ytr))
-	txt = PathPatch(tp, linewidth=0.5, facecolor = "0", edgecolor = "0")
+		scale = h_max_scale * bw / tw
+	tp = tp.transformed(Affine2D().scale(scale))
+	(__, __, tw, th) = tp.get_extents().bounds		
+
+	tp = tp.transformed(Affine2D().translate(x + (w - tw) / 2, y + (h - th) / 2))
+
+	txt = PathPatch(tp, linewidth=0.3, facecolor = "0", edgecolor = "0")
 	gca.add_patch(txt)
+
+def draw_description(txt, gca, height):
+	(ymin, ymax) = gca.get_ylim()
+	#draw_text(txt, 0, ymax - height, len(txt), height, gca)
+	gca.text(0,0,txt)
 
 def draw_component(id, c, gca):
 	if gca is not None and "box" in c:
@@ -140,8 +159,8 @@ def draw_component(id, c, gca):
 		x = b[0]; y = b[1]; w = b[2]; h = b[3]
 		color = colors[t] if t in colors else "#000000"
 		rect = Rectangle((x, y), w, h, linewidth = 1.5, edgecolor = color, facecolor = color + "60", zorder = 1)
-		gca.add_patch(rect)
-		draw_text(id, x, y, w, h, gca)
+		gca[0].add_patch(rect)
+		draw_text(id, x, y, w, h, gca[0])
 
 def draw_neighbors(board, id, component, trace, gca):
 	for t in board.traces[trace]:
@@ -151,7 +170,7 @@ def draw_neighbors(board, id, component, trace, gca):
 			p = [component_center(neighbor), component_center(component)]
 			line = Polygon(p, closed = False, fill = False, linewidth = 1, \
 				edgecolor = "#ffffff", zorder = 0.5)
-			gca.add_patch(line)
+			gca[0].add_patch(line)
 
 def print_components(board, component_filter, sequential_filter, gca):
 	print()
@@ -203,7 +222,7 @@ def component_center(c):
 	b = c["box"]
 	return (b[0] + b[2] / 2, b[1] + b[3] / 2)
 
-def print_traces(board, trace_filter, sequential_filter, gca):
+def print_traces(board, trace_filter, sequential_filter, gca, pdf):
 	print()
 	filters = re.split(",", trace_filter)
 	traces = {key : board.traces[key] for key in board.traces.keys() \
@@ -212,50 +231,65 @@ def print_traces(board, trace_filter, sequential_filter, gca):
 		return
 
 	single_mode = (len(traces) == 1)
+	details = sequential_filter or single_mode
 	tid_width = max([len(key) for key in traces.keys()])
 
 	color = 0xff; items = len(traces)
 	for key, tr in sorted(traces.items()):
 		tr.sort(key = lambda x: x[0] + str(x[1]).zfill(3))
-		print(format_trace(key, tr, tid_width, True))
+		print(format_trace(key, tr, tid_width, details))
 
 		cs = [board.components[i[0]] for i in tr]
 		pins = [i[1] for i in tr]
 		cid_width = max([len(c["id"]) for c in cs])
 		part_width = max([len(c["part"]) + len(c["type"]) + 1 for c in cs])
 
-		print()
+		if details:
+			print()
+
 		for idx, c in enumerate(cs):
 			id = c["id"]
-			print(format_component(id, c, cid_width, part_width, False, True))
+			if details:
+				print(format_component(id, c, cid_width, part_width, False, True))
 			draw_component(id + ("-" + str(pins[idx] + 1) if single_mode else ""), c, gca)
-		
-		if gca is not None and "box" in c:
-			p = [component_center(c) for c in cs if "box" in c]
-			center = reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]), p, (0, 0))
-			center = (center[0] / len(p), (center[1] / len(p)))
-			p.sort(key = lambda a: math.atan2(a[1] - center[1], a[0] - center[0]))
-			c = int(color)
-			poly = Polygon(p, closed = True, fill = False, linewidth = 2, \
-				edgecolor = "#{:02X}{:02X}{:02X}".format(c, c, c), zorder = 0.5)
-			if not sequential_filter:
-				color = color - (0xff / items)
-			gca.add_patch(poly)
-		print()
-		if sequential_filter and gca is not None:
-			pyplot.show()
-			gca = init_gca(board)
+			if gca is not None and "box" in c:
+				p = [component_center(c) for c in cs if "box" in c]
+				center = reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]), p, (0, 0))
+				center = (center[0] / len(p), (center[1] / len(p)))
+				p.sort(key = lambda a: math.atan2(a[1] - center[1], a[0] - center[0]))
+				c = int(color)
+				poly = Polygon(p, closed = True, fill = False, linewidth = 2, \
+					edgecolor = "#{:02X}{:02X}{:02X}".format(c, c, c), zorder = 0.5)
 
-	if not sequential_filter and gca is not None:
+		if details:
+			print()
+
+		if gca is not None:
+			gca[0].add_patch(poly)
+			if details:
+				draw_description("Trace: " + key, gca[1], 1)
+	#			pdf.savefig(gca[2])
+				pyplot.show()
+				gca = init_gca(board)
+			else:
+				color = color - (0xff / items)
+	
+	if not details:
+		print()
+
+	if gca is not None and not details:
 		pyplot.show()
 
 def init_gca(board):
-	matplotlib.rcParams['figure.figsize'] = (14.0, 9.0)
 	data = image.imread("./pictures/" + board.board_image)
 	data = numpy.flipud(data)
-	pyplot.axis("off")
-	pyplot.imshow(data, origin = "lower")
-	return pyplot.gca()
+	fig = pyplot.figure(figsize = (14, 9))
+	p1 = fig.add_subplot(2, 1, 1, position = [0, 0.25, 1, 0.75])
+	p1.axis("off")
+	im = p1.imshow(data, origin = "lower")
+	p2 = fig.add_subplot(2, 1, 2, position = [0, 0, 1, 0.25], xlim = (0, 40), ylim = (0, 7))
+	p2.axis("off")
+	return (p1, p2, fig)
 
 def main(argv):
 	try:
@@ -295,10 +329,14 @@ def main(argv):
 		print("Define only one: -c or -t")
 		return
 
+	pdf = PdfPages("./a.pdf")
+
 	if component_filter is not None:
 		print_components(board, component_filter, sequential_filter, gca)
 	elif trace_filter is not None:
-		print_traces(board, trace_filter, sequential_filter, gca)
+		print_traces(board, trace_filter, sequential_filter, gca, pdf)
+
+	pdf.close()
 
 if __name__ == "__main__":
 	assert sys.version_info >= (3, 0)
