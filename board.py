@@ -27,7 +27,6 @@
 
 import sys, re, json, datetime, getopt, fnmatch, matplotlib, numpy, math
 from json import JSONDecodeError
-from matplotlib import image
 from matplotlib import pyplot
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import Rectangle, PathPatch, Polygon
@@ -35,11 +34,12 @@ from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.text import TextPath
 from matplotlib.transforms import Affine2D
 from functools import reduce
+from PIL import Image
 
 global prog_name
 
 class MotherBoard:
-	def __init__(self, json):
+	def __init__(self, json, black_white):
 		if "components" not in json or "traces" not in json:
 			print("Json does not contain components/traces on top level.")
 			return
@@ -49,6 +49,7 @@ class MotherBoard:
 			self.board_image = json["board_image"]
 		else:
 			self.board_image = None
+		self.bw = black_white
 
 def usage():
 	print()
@@ -62,6 +63,7 @@ def usage():
 	print("  {:<33} {}".format("-t,--trace <id1>[,<id2>,...]", "Display traces (wildcards allowed for each ID)"))
 	print()
 	print("OPTIONAL:")
+	print("  {:<33} {}".format("   --colors", "Draw board image in colors (default is b & w)"))
 	print("  {:<33} {}".format("-d,--detailed", "Display details about components or traces"))
 	print("  {:<33} {}".format("-g,--graphics", "Draw board image on screen"))
 	print("  {:<33} {}".format("-h,--help", "Display help"))
@@ -83,7 +85,7 @@ def usage():
 def is_id_power(id):
 	return id in ("GND", "+12V", "-12V", "+5V", "-5V", "+12FV", "-12FV", "+5FV", "-5FV", "GNDF")
 
-def load_json(fname):
+def load_json(fname, black_white):
 	try:
 		file = open(fname, "r")
 	except IOError:
@@ -96,7 +98,7 @@ def load_json(fname):
 		return
 	finally:
 		file.close()
-	return MotherBoard(data)
+	return MotherBoard(data, black_white)
 
 def format_pins(pins):
 	txt = ""
@@ -183,7 +185,7 @@ def display_figure(figure, display, pdf):
 	if display:
 		pyplot.show()
 	if pdf is not None:
-		pdf.savefig(figure)
+		pdf.savefig(figure, dpi=60, orientation="portrait", facecolor="#ffffffff")
 	pyplot.close(figure)
 
 def print_components(board, component_filter, detailed, merged, neighbors, display, pdf, gca):
@@ -290,9 +292,11 @@ def init_gca(board):
 	p1 = fig.add_subplot(3, 1, 2, position = [0, 0.25, 1, 0.70])
 	p1.axis("off")
 	if board.board_image is not None:
-		data = image.imread("./pictures/" + board.board_image)
-		data = numpy.flipud(data)
-		p1.imshow(data, origin = "lower")
+		img = Image.open("./pictures/" + board.board_image)
+		if board.bw:
+			img = img.convert("L")
+		data = numpy.flipud(numpy.asarray(img))
+		p1.imshow(data, origin = "lower", interpolation = "nearest", cmap = pyplot.get_cmap("Greys_r"))
 	p2 = fig.add_subplot(3, 1, 3, position = [0, 0.00, 1, 0.25], xlim = (0, 40), ylim = (0, 7))
 	p2.axis("off")
 	return (p1, p2, p0, fig)
@@ -300,7 +304,8 @@ def init_gca(board):
 def main(argv):
 	try:
 		opts, args = getopt.getopt(argv, "ghc:t:dmnj:p:", \
-			["graphics", "help","component=","trace=", "details", "merge", "neighbors", "json=", "pdf="])
+			["graphics", "help","component=","trace=", "details", "merge", "neighbors", \
+			"json=", "pdf=", "colors"])
 	except getopt.GetoptError:
 		usage()
 
@@ -317,6 +322,7 @@ def main(argv):
 	display = False
 	merged = False
 	gca = None
+	black_white = True
 
 	for opt, arg in opts:
 		if opt in ["-h", "--help"]:
@@ -337,11 +343,13 @@ def main(argv):
 			neighbors = True
 		elif opt in ["-g", "--graphics"]:
 			display = True
+		elif opt in ["--colors"]:
+			black_white = False
 
 	if json_file is None:
 		usage()
 
-	board = load_json(json_file)
+	board = load_json(json_file, black_white)
 	if board is None: 
 		return
 

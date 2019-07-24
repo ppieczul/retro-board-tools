@@ -64,6 +64,13 @@ Selects IDs of traces on board. Only one of `-t, -c` can be selected at the same
 
 **OPTIONS:**
 
+
+```
+--colors
+```
+
+Display board image in colors. By default the board image is displyed in black and white, to contrast with added annotations and to save space when saving to PDF. This option affects both displayed and saved pictures.
+
 ```
 -g or --graphics
 ```
