@@ -24,32 +24,21 @@ You are also welcome to visit my collection of vintage computers:
 
 ### board.py
 
-With this script it is possible to display information about board components and traces. Script loads and parses a board wire list from a **JSON** file. JSON files are contained in [`data`](./data) directory.
+With this script it is possible to display information about board components and traces. Script loads and parses a board wire list from a **JSON** file. **JSON** files are contained in [`data`](./data) directory.
 
 **SYNTAX:**
 
 ```
-./board.py [options] <board-file.json>
+./board.py [options]
 ```
 
-Where:
+**MANDATORY PARAMETERS:**
 
 ```
-board-file.json - a file describing the board to query
+-j or --json=board-file.json
 ```
 
-**OPTIONS:**
-
-```
--g or --graphics
-```
-
-Display an image with the motherboard and mark the location of components.
-
-```
--h or --help
-```
-Display tool help (usage).
+Provide a file describing the board to operate on.
 
 ```
 -c or --component <ID1>,<ID2>,...
@@ -62,14 +51,6 @@ Select IDs of components to display information about. Only one of `-t, -c` can 
   * Multiple IDs can be separated by commas, e.g.: `U128,R5,C10` or with wildcards: `U10?,R*,X2`
 
 ```
--s or --sequential
-```
-
-If multiple components are selected either by providing a wildcard or more than one ID, by default the components are combined and a single trace is displayed covering all components.
-
-With `-s` option, the components can be displayed one by one and an individual trace will be shown for each component.
-
-```
 -t or --trace <ID1>,<ID2>,...
 ```
 
@@ -78,3 +59,34 @@ Selects IDs of traces on board. Only one of `-t, -c` can be selected at the same
   * Single ID is case insensitive, e.g. `sync` or `A13`
   * Single ID can use file-style wildcards, e.g.: `A1?` or `PRAS*`
   * Multiple IDs can be separated by commas, e.g.: `A1,A2,A3` or with wildcards: `A*,SYNC?`
+
+
+
+**OPTIONS:**
+
+```
+-g or --graphics
+```
+
+Display an image with the motherboard and mark the location of components and/or traces.
+
+```
+-h or --help
+```
+Display tool help (usage).
+
+```
+-m or --merge
+```
+
+By default the components or traces are displayed one by one with all the details related to each of them. With `-m` option, additionally the following information will be displayed:
+
+  * With `-c`: traces from all components will be combined and presented together
+  * With `-t`: all selected traces will be combined and presented together
+
+```
+-n or --neighbors
+```
+
+When `-c` is selected together with `-g`, adding `-n` will draw all neighboring components and link them to the queried component(s).
+

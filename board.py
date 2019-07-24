@@ -53,22 +53,29 @@ def usage():
 	print()
 	print("USAGE:", prog_name, " -c<ids>|-t<ids> [options] <board-file.json>")
 	print()
-	print("OPTIONS:")
+	print("MANDATORY:")
+	print("  {:<33} {}".format("-j,--json <json-file>", "Use JSON file with board definitions"))
+	print()
+	print("MANDATORY (ONE OF OPTIONS MUST BE PRESENT):")
 	print("  {:<33} {}".format("-c,--component <id1>[,<id2>,...]", "Display components (wildcards allowed for each ID)"))
-	print("  {:<33} {}".format("-g,--graphics", "Display board image with annotations"))
-	print("  {:<33} {}".format("-h,--help", "Display help"))
-	print("  {:<33} {}".format("-s,--sequential", "Display traces for each component separately"))
 	print("  {:<33} {}".format("-t,--trace <id1>[,<id2>,...]", "Display traces (wildcards allowed for each ID)"))
 	print()
-	print("EXAMPLES:")
-	print("  {} -c* -s a3-board.json".format(prog_name))
-	print("      Display all components and all traces one by one.")
+	print("OPTIONAL:")
+	print("  {:<33} {}".format("-d,--detailed", "Display details about components or traces"))
+	print("  {:<33} {}".format("-g,--graphics", "Draw board image on screen"))
+	print("  {:<33} {}".format("-h,--help", "Display help"))
+	print("  {:<33} {}".format("-m,--merge", "Merge and display/draw all concerning traces at once"))
+	print("  {:<33} {}".format("-n,--neighbors", "Draw component neighbors too (valid with -c and -g)"))
 	print()
-	print("  {} -cC* c64-board.json".format(prog_name))
+	print("EXAMPLES:")
+	print("  {} --json=a3-board.json -c* -d".format(prog_name))
+	print("      Display all components and their pins/traces one by one.")
+	print()
+	print("  {} --json=c64-board.json -cC* -m".format(prog_name))
 	print("      Display all capacitors and a combined trace.")
 	print()
-	print("  {} -cU160,R5,X*  a3-board.json".format(prog_name))
-	print("      Display chip U160, resistor R5 and all diodes and a combined trace.")
+	print("  {} --json=a3-board.json -cU160,R5,X* -g -n".format(prog_name))
+	print("      Display chip U160, resistor R5 and all diodes, draw them and their neighbors.")
 	print()
 	sys.exit()
 
@@ -98,22 +105,22 @@ def format_pins(pins):
 		txt += "-" if trace == "" else trace
 	return " (" + txt + ")"
 
-def format_component(id, c, id_width, part_width, simple, skip_pins):
+def format_component(id, c, id_width, part_width, adjust, show_pins):
 	return "{}: {} {}{}".format( \
-		id.rjust(0 if simple else id_width),  \
-		(c["part"] + ("" if c["type"] == "" else "/" + c["type"])).ljust(0 if simple else part_width), \
-		c["location"].ljust(0 if simple else 3), "" if skip_pins else format_pins(c["pins"]))
+		id.rjust(id_width if adjust else 0),  \
+		(c["part"] + ("" if c["type"] == "" else "/" + c["type"])).ljust(part_width if adjust else 0), \
+		c["location"].ljust(3 if adjust else 0), format_pins(c["pins"]) if show_pins else "")
 
-def format_trace(id, trace, id_width, single_mode):
+def format_trace(id, trace, id_width, adjust):
 	if is_id_power(id):
-		return "{}: ...".format(id.rjust(0 if single_mode else id_width))
+		return "{}: ...".format(id.rjust(id_width if adjust else 0))
 	else:
 		trace.sort(key = lambda x: x[0][0] + x[0][1:].zfill(3) + str(x[1]).zfill(2))
 		txt = ""
 		for t in trace:
 			pin = "{}-{}".format(t[0], t[1] + 1)
-			txt += ("{} " if single_mode else "{:<8}").format(pin)
-		return "{}: {}".format(id.rjust(0 if single_mode else id_width), txt)
+			txt += ("{:<8}" if adjust else "{} ").format(pin)
+		return "{}: {}".format(id.rjust(id_width if adjust else 0), txt)
 
 def draw_text(txt, x, y, w, h, gca):
 	v_max_scale = 0.7
@@ -145,7 +152,7 @@ def draw_text(txt, x, y, w, h, gca):
 def draw_description(txt, gca):
 	gca.text(0, 0, txt, size = 15)
 
-def draw_component(id, c, gca):
+def draw_component(id, c, gca, edgecolor = None):
 	if gca is not None and "box" in c:
 		colors = { "U" : "#00ff00", \
 				   "L" : "#ff0000", \
@@ -155,7 +162,9 @@ def draw_component(id, c, gca):
 		b = c["box"]; t = id[0]
 		x = b[0]; y = b[1]; w = b[2]; h = b[3]
 		color = colors[t] if t in colors else "#000000"
-		rect = Rectangle((x, y), w, h, linewidth = 1.5, edgecolor = color, facecolor = color + "40", zorder = 1)
+		rect = Rectangle((x, y), w, h, linewidth = 1.5 if edgecolor is None else 2, \
+			edgecolor = color if edgecolor is None else edgecolor, \
+			facecolor = color + "40", zorder = 1)
 		gca[0].add_patch(rect)
 		draw_text(id, x, y, w, h, gca[0])
 
@@ -166,10 +175,14 @@ def draw_neighbors(board, id, component, trace, gca):
 			draw_component(neighbor["id"], neighbor, gca)
 			p = [component_center(neighbor), component_center(component)]
 			line = Polygon(p, closed = False, fill = False, linewidth = 1, \
-				edgecolor = "#ffffff", zorder = 0.5)
+				edgecolor = "#ffffffff", zorder = 0.5)
 			gca[0].add_patch(line)
 
-def print_components(board, component_filter, sequential_filter, gca):
+def display_figure(display):
+	if display:
+		pyplot.show()	
+
+def print_components(board, component_filter, detailed, merged, neighbors, display, gca):
 	print()
 	filters = re.split(",", component_filter)
 	components = [board.components[key] for key in board.components.keys() \
@@ -186,42 +199,38 @@ def print_components(board, component_filter, sequential_filter, gca):
 	cid_width = max([len(c["id"]) for c in components])
 	id_width = max([tid_width, cid_width])
 	part_width = max([len(c["part"]) + len(c["type"]) + 1 for c in components])
-	single_mode = (len(components) == 1)
-	details = single_mode or sequential_filter
 
 	for c in components:
 		id = c["id"]
-		print(format_component(id, c, cid_width, part_width, details, details))
-		if details:
-			print()
-			for pin, t in enumerate(c["pins"]):
-				fmt = "-".rjust(id_width) if t == "" else format_trace(t, traces[t], id_width, False)
+		print(format_component(id, c, cid_width, part_width, not detailed, not detailed))
+		if detailed: print()
+		for pin, t in enumerate(c["pins"]):
+			if detailed:
+				fmt = "-".rjust(id_width) if t == "" else format_trace(t, traces[t], id_width, True)
 				print("{:>2}: {}".format(pin + 1, fmt))
-				if  t != "" and not is_id_power(t) and gca is not None:
-					draw_neighbors(board, id, c, t, gca)
-			print()
-			if gca is not None:
-				draw_component(id, c, gca)
+			if  neighbors and t != "" and not is_id_power(t) and gca is not None:
+				draw_neighbors(board, id, c, t, gca)
+		if detailed: print()
+		if gca is not None:
+			draw_component(id, c, gca, edgecolor = "#ff0000ff" if neighbors else None)
+			if not merged:
 				draw_description("Component: " + id, gca[2])
-				pyplot.show()	
+				display_figure(display)
 				gca = init_gca(board)
-		else:
-			draw_component(id, c, gca)
-
-	if not details: 
-		print()
+	if not detailed: print()
+	if merged:
 		for k, v in traces.items():
-			print(format_trace(k, v, id_width, False))
+			print(format_trace(k, v, id_width, True))
 		print()
 		if gca is not None:
 			draw_description("Component: multiple", gca[2])
-			pyplot.show()
+			display_figure(display)
 
 def component_center(c):
 	b = c["box"]
 	return (b[0] + b[2] / 2, b[1] + b[3] / 2)
 
-def print_traces(board, trace_filter, sequential_filter, gca):
+def print_traces(board, trace_filter, detailed, merged, display, gca):
 	print()
 	filters = re.split(",", trace_filter)
 	traces = {key : board.traces[key] for key in board.traces.keys() \
@@ -229,101 +238,107 @@ def print_traces(board, trace_filter, sequential_filter, gca):
 	if len(traces) == 0:
 		return
 
-	single_mode = (len(traces) == 1)
-	details = sequential_filter or single_mode
 	tid_width = max([len(key) for key in traces.keys()])
 
 	color = 0xff; items = len(traces)
 	sorted_traces = sorted(traces.items())
 	for key, tr in sorted_traces:
 		tr.sort(key = lambda x: x[0] + str(x[1]).zfill(3))
-		print(format_trace(key, tr, tid_width, details))
+		print(format_trace(key, tr, tid_width, not detailed))
 
-		cs = [board.components[i[0]] for i in tr]
-		pins = [i[1] for i in tr]
-		cid_width = max([len(c["id"]) for c in cs])
-		part_width = max([len(c["part"]) + len(c["type"]) + 1 for c in cs])
+		cs = [(board.components[i[0]], i[1]) for i in tr]
+		cid_width = max([len(c["id"]) + 3 for (c, __) in cs])
+		part_width = max([len(c["part"]) + len(c["type"]) + 1 for (c,__) in cs])
 
-		if details:
-			print()
-
-		for idx, c in enumerate(cs):
+		if detailed: print()
+		for (c, pin) in cs:
 			id = c["id"]
-			if details:
-				print(format_component(id, c, cid_width, part_width, False, True))
-			draw_component(id + ("-" + str(pins[idx] + 1) if single_mode else ""), c, gca)
+			if detailed:
+				print(format_component(id + "-" + str(pin + 1), c, cid_width, part_width, True, False))
+			draw_component(id + ("-" + str(pin + 1) if not merged else ""), c, gca)
 
-
-		if details:
-			print()
-
+		if detailed: print()
 		if gca is not None:
-			p = [component_center(c) for c in cs if "box" in c]
+			p = [component_center(c) for (c, __) in cs if "box" in c]
 			if len(p) > 0:
 				center = reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]), p, (0, 0))
 				center = (center[0] / len(p), (center[1] / len(p)))
 				p.sort(key = lambda a: math.atan2(a[1] - center[1], a[0] - center[0]))
-				c = int(color)
+				q = int(color)
 				poly = Polygon(p, closed = True, fill = False, linewidth = 2, \
-					edgecolor = "#{:02X}{:02X}{:02X}".format(c, c, c), zorder = 0.5)
+					edgecolor = "#{:02X}{:02X}{:02X}".format(q, q, q), zorder = 0.5)
 				gca[0].add_patch(poly)
-			if details:
+			if not merged:
 				draw_description("Trace: " + key, gca[2])
-				pyplot.show()
+				display_figure(display)
 				gca = init_gca(board)
 			else:
 				draw_description("Traces: multiple", gca[2])		
 				color = color - (0xff / items)
-	
-	if not details:
-		print()
-
-	if gca is not None and not details:
-		pyplot.show()
+	if not detailed: print()
+	if merged:
+		display_figure(display)
 
 def init_gca(board):
-	data = image.imread("./pictures/" + board.board_image)
-	data = numpy.flipud(data)
 	fig = pyplot.figure(figsize = (14, 9))
 	p0 = fig.add_subplot(3, 1, 1, position = [0, 0.95, 1, 0.05])
 	p0.axis("off")
 	p1 = fig.add_subplot(3, 1, 2, position = [0, 0.25, 1, 0.70])
 	p1.axis("off")
-	im = p1.imshow(data, origin = "lower")
+	if board.board_image is not None:
+		data = image.imread("./pictures/" + board.board_image)
+		data = numpy.flipud(data)
+		p1.imshow(data, origin = "lower")
 	p2 = fig.add_subplot(3, 1, 3, position = [0, 0.00, 1, 0.25], xlim = (0, 40), ylim = (0, 7))
 	p2.axis("off")
 	return (p1, p2, p0, fig)
 
 def main(argv):
 	try:
-		opts, args = getopt.getopt(argv, "ghc:t:s",["graphics", "help","component=","trace=", "sequential"])
+		opts, args = getopt.getopt(argv, "ghc:t:dmnj:", \
+			["graphics", "help","component=","trace=", "details", "merge", "neighbors", "json="])
 	except getopt.GetoptError:
 		usage()
 
-	if len(opts) == 0 or len(args) < 1:
+	if len(opts) == 0 or len(args) > 1:
 		usage()
 
-	json_file = args[0]
-	board = load_json(json_file)
-	if board is None: 
-		return
-
+	json_file = None
 	component_filter = None
 	trace_filter = None
-	sequential_filter = False
+	neighbors = False
+	detailed = False
+	display = False
+	merged = False
 	gca = None
 
 	for opt, arg in opts:
 		if opt in ["-h", "--help"]:
 			usage()
+		elif opt in ["-j", "--json"]:
+			json_file = arg		
 		elif opt in ["-c", "--component"]:
 			component_filter = arg.upper()
 		elif opt in ["-t", "--trace"]:
 			trace_filter = arg.upper()
-		elif opt in ["-s", "--sequential"]:
-			sequential_filter = True
-		elif opt in ["-g", "--graphics"] and board.board_image is not None:
-			gca = init_gca(board)
+		elif opt in ["-d", "--details"]:
+			detailed = True
+		elif opt in ["-m", "--merge"]:
+			merged = True
+		elif opt in ["-n", "--neighbors"]:
+			neighbors = True
+		elif opt in ["-g", "--graphics"]:
+			display = True
+
+	if json_file is None:
+		usage()
+
+	board = load_json(json_file)
+	if board is None: 
+		return
+
+	if display:
+		gca = init_gca(board)
 
 	if component_filter is None and trace_filter is None:
 		usage()
@@ -333,9 +348,9 @@ def main(argv):
 		return
 
 	if component_filter is not None:
-		print_components(board, component_filter, sequential_filter, gca)
+		print_components(board, component_filter, detailed, merged, neighbors, display, gca)
 	elif trace_filter is not None:
-		print_traces(board, trace_filter, sequential_filter, gca)
+		print_traces(board, trace_filter, detailed, merged, display, gca)
 
 if __name__ == "__main__":
 	assert sys.version_info >= (3, 0)
