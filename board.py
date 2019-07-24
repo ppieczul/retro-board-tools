@@ -25,12 +25,13 @@
 # Author: Pawel Pieczul
 #
 
-import sys, re, json, getopt, fnmatch, matplotlib, numpy, math
+import sys, re, json, datetime, getopt, fnmatch, matplotlib, numpy, math
 from json import JSONDecodeError
 from matplotlib import image
 from matplotlib import pyplot
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import Rectangle, PathPatch, Polygon
+from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.text import TextPath
 from matplotlib.transforms import Affine2D
 from functools import reduce
@@ -178,11 +179,14 @@ def draw_neighbors(board, id, component, trace, gca):
 				edgecolor = "#ffffffff", zorder = 0.5)
 			gca[0].add_patch(line)
 
-def display_figure(display):
+def display_figure(figure, display, pdf):
 	if display:
-		pyplot.show()	
+		pyplot.show()
+	if pdf is not None:
+		pdf.savefig(figure)
+	pyplot.close(figure)
 
-def print_components(board, component_filter, detailed, merged, neighbors, display, gca):
+def print_components(board, component_filter, detailed, merged, neighbors, display, pdf, gca):
 	print()
 	filters = re.split(",", component_filter)
 	components = [board.components[key] for key in board.components.keys() \
@@ -215,7 +219,7 @@ def print_components(board, component_filter, detailed, merged, neighbors, displ
 			draw_component(id, c, gca, edgecolor = "#ff0000ff" if neighbors else None)
 			if not merged:
 				draw_description("Component: " + id, gca[2])
-				display_figure(display)
+				display_figure(gca[3], display, pdf)
 				gca = init_gca(board)
 	if not detailed: print()
 	if merged:
@@ -224,13 +228,13 @@ def print_components(board, component_filter, detailed, merged, neighbors, displ
 		print()
 		if gca is not None:
 			draw_description("Component: multiple", gca[2])
-			display_figure(display)
+			display_figure(gca[3], display, pdf)
 
 def component_center(c):
 	b = c["box"]
 	return (b[0] + b[2] / 2, b[1] + b[3] / 2)
 
-def print_traces(board, trace_filter, detailed, merged, display, gca):
+def print_traces(board, trace_filter, detailed, merged, display, pdf, gca):
 	print()
 	filters = re.split(",", trace_filter)
 	traces = {key : board.traces[key] for key in board.traces.keys() \
@@ -270,14 +274,14 @@ def print_traces(board, trace_filter, detailed, merged, display, gca):
 				gca[0].add_patch(poly)
 			if not merged:
 				draw_description("Trace: " + key, gca[2])
-				display_figure(display)
+				display_figure(gca[3], display, pdf)
 				gca = init_gca(board)
 			else:
 				draw_description("Traces: multiple", gca[2])		
 				color = color - (0xff / items)
 	if not detailed: print()
 	if merged:
-		display_figure(display)
+		display_figure(gca[3], display, pdf)
 
 def init_gca(board):
 	fig = pyplot.figure(figsize = (14, 9))
@@ -295,14 +299,16 @@ def init_gca(board):
 
 def main(argv):
 	try:
-		opts, args = getopt.getopt(argv, "ghc:t:dmnj:", \
-			["graphics", "help","component=","trace=", "details", "merge", "neighbors", "json="])
+		opts, args = getopt.getopt(argv, "ghc:t:dmnj:p:", \
+			["graphics", "help","component=","trace=", "details", "merge", "neighbors", "json=", "pdf="])
 	except getopt.GetoptError:
 		usage()
 
 	if len(opts) == 0 or len(args) > 1:
 		usage()
 
+	pdf_file = None
+	pdf = None
 	json_file = None
 	component_filter = None
 	trace_filter = None
@@ -317,6 +323,8 @@ def main(argv):
 			usage()
 		elif opt in ["-j", "--json"]:
 			json_file = arg		
+		elif opt in ["-p", "--pdf"]:
+			pdf_file = arg		
 		elif opt in ["-c", "--component"]:
 			component_filter = arg.upper()
 		elif opt in ["-t", "--trace"]:
@@ -337,7 +345,7 @@ def main(argv):
 	if board is None: 
 		return
 
-	if display:
+	if display or pdf_file is not None:
 		gca = init_gca(board)
 
 	if component_filter is None and trace_filter is None:
@@ -347,10 +355,27 @@ def main(argv):
 		print("Define only one: -c or -t")
 		return
 
+	if pdf_file is not None:
+		try:
+			pdf = PdfPages(pdf_file)
+		except IOError:
+			usage()
+		d = pdf.infodict()
+		if component_filter is not None: 
+			d["Title"] = "Components of board " + json_file
+		else:
+			d["Title"] = "Traces of board " + json_file
+		d["Author"] = "oldcrap.org"
+		d["Subject"] = "Automatically generated file containing information about board components and traces" 
+		d["CreationDate"] = d["ModDate"] = datetime.datetime.today()
+
 	if component_filter is not None:
 		print_components(board, component_filter, detailed, merged, neighbors, display, gca)
 	elif trace_filter is not None:
-		print_traces(board, trace_filter, detailed, merged, display, gca)
+		print_traces(board, trace_filter, detailed, merged, display, pdf, gca)
+
+	if pdf is not None:
+		pdf.close()
 
 if __name__ == "__main__":
 	assert sys.version_info >= (3, 0)
