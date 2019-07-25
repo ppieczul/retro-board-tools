@@ -57,6 +57,7 @@ def process_csv(csv, json):
 		c = json["components"][x[0].upper()]
 		if c is None or c == "":
 			print("Unknown component {} in line {}".format(x[0], idx))
+			sys.exit()
 		check_integer(x[1], idx)
 		check_integer(x[2], idx)
 		check_integer(x[3], idx)
