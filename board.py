@@ -46,10 +46,12 @@ class MotherBoard:
 		self.components = json["components"]
 		self.traces = json["traces"]
 		if "board_image" in json:
-			self.board_image = json["board_image"]
+			img = Image.open("./pictures/" + json["board_image"])
+			if black_white:
+				img = img.convert("L")
+			self.image = numpy.flipud(numpy.asarray(img))
 		else:
-			self.board_image = None
-		self.bw = black_white
+			self.image = None
 
 def usage():
 	print()
@@ -98,7 +100,12 @@ def load_json(fname, black_white):
 		return
 	finally:
 		file.close()
-	return MotherBoard(data, black_white)
+	try:
+		board = MotherBoard(data, black_white)
+	except IOError:
+		print("\nCan't open board image file.\n")
+		return
+	return board
 
 def format_pins(pins):
 	txt = ""
@@ -161,7 +168,12 @@ def draw_component(id, c, gca, edgecolor = None):
 				   "L" : "#ff0000", \
 				   "J" : "#ffff00", \
 				   "Q" : "#ff0000", \
-				   "P" : "#ff00ff"}
+				   "P" : "#ff00ff", \
+				   "C" : "#00ffff", \
+				   "R" : "#ff3388", \
+				   "X" : "#ff0000", \
+				   "Y" : "#33ff88", \
+				   "T" : "#9955ff"}
 		b = c["box"]; t = id[0]
 		x = b[0]; y = b[1]; w = b[2]; h = b[3]
 		color = colors[t] if t in colors else "#000000"
@@ -291,12 +303,7 @@ def init_gca(board):
 	p0.axis("off")
 	p1 = fig.add_subplot(3, 1, 2, position = [0, 0.25, 1, 0.70])
 	p1.axis("off")
-	if board.board_image is not None:
-		img = Image.open("./pictures/" + board.board_image)
-		if board.bw:
-			img = img.convert("L")
-		data = numpy.flipud(numpy.asarray(img))
-		p1.imshow(data, origin = "lower", interpolation = "nearest", cmap = pyplot.get_cmap("Greys_r"))
+	p1.imshow(board.image, origin = "lower", interpolation = "nearest", cmap = pyplot.get_cmap("Greys_r"))
 	p2 = fig.add_subplot(3, 1, 3, position = [0, 0.00, 1, 0.25], xlim = (0, 40), ylim = (0, 7))
 	p2.axis("off")
 	return (p1, p2, p0, fig)
@@ -378,7 +385,7 @@ def main(argv):
 		d["CreationDate"] = d["ModDate"] = datetime.datetime.today()
 
 	if component_filter is not None:
-		print_components(board, component_filter, detailed, merged, neighbors, display, gca)
+		print_components(board, component_filter, detailed, merged, neighbors, display, pdf, gca)
 	elif trace_filter is not None:
 		print_traces(board, trace_filter, detailed, merged, display, pdf, gca)
 
